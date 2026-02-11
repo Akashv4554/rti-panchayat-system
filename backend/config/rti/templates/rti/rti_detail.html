@@ -11,6 +11,16 @@
 {% if rti.rtiresponse %}
     <h3>Response</h3>
     <p>{{ rti.rtiresponse.reply_text }}</p>
+    <p><strong>Replied On:</strong> {{ rti.rtiresponse.date_replied }}</p>
+
+    {% if rti.rtiresponse.analystreview %}
+        <h3>Analyst Review</h3>
+        <p><strong>Status:</strong> {{ rti.rtiresponse.analystreview.get_status_display }}</p>
+        <p><strong>Remarks:</strong> {{ rti.rtiresponse.analystreview.remarks }}</p>
+    {% else %}
+        <p><em>No analyst review yet.</em></p>
+    {% endif %}
+
 {% else %}
     <p><em>No response uploaded yet.</em></p>
 {% endif %}
