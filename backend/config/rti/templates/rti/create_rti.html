@@ -1,7 +1,68 @@
-<h1>Create RTI</h1>
+{% extends "base.html" %}
+{% block content %}
 
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Submit</button>
-</form>
+<div class="container mt-5">
+
+    <!-- Page Title -->
+    <div class="mb-4">
+        <h2 class="fw-bold text-primary">Create RTI Request</h2>
+        <p class="text-muted">Department of Rural Development & Panchayat Raj</p>
+    </div>
+
+    <!-- Form Card -->
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <form method="post">
+                {% csrf_token %}
+
+                <!-- Applicant Name -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Applicant Name</label>
+                    {{ form.applicant_name }}
+                </div>
+
+                <!-- Reference Number -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Reference Number</label>
+                    {{ form.reference_number }}
+                </div>
+
+                <!-- Date Filed -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Date Filed</label>
+                    {{ form.date_filed }}
+                </div>
+
+                <!-- Panchayat -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Select Panchayat</label>
+                    {{ form.panchayat }}
+                </div>
+
+                <!-- Description -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">RTI Description</label>
+                    {{ form.description }}
+                </div>
+
+                <!-- Buttons -->
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="/" class="btn btn-secondary">
+                        ← Back
+                    </a>
+
+                    <button type="submit" class="btn btn-primary">
+                        Submit RTI
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
+

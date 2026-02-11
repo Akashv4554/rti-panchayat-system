@@ -1,21 +1,83 @@
-<h1>RTI Dashboard</h1>
+{% extends "base.html" %}
+{% block content %}
 
-<h3>Statistics</h3>
+<div class="container mt-5">
 
-<p><strong>Total RTIs:</strong> {{ total_rti }}</p>
-<p><strong>Total Responses:</strong> {{ total_responses }}</p>
-<p><strong>Delayed Responses:</strong> {{ delayed_responses }}</p>
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-primary">RTI Dashboard</h2>
+            <p class="text-muted">Department of Rural Development & Panchayat Raj</p>
+        </div>
+        <a href="/" class="btn btn-secondary">← Back to RTI List</a>
+    </div>
 
-<hr>
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
 
-<h3>Analyst Review Breakdown</h3>
+        <div class="col-md-4">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">Total RTIs</h6>
+                    <h3 class="fw-bold text-primary">{{ total_rti }}</h3>
+                </div>
+            </div>
+        </div>
 
-{% for stat in review_stats %}
-    <p>{{ stat.status }} : {{ stat.count }}</p>
-{% empty %}
-    <p>No reviews yet.</p>
-{% endfor %}
+        <div class="col-md-4">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">Total Responses</h6>
+                    <h3 class="fw-bold text-success">{{ total_responses }}</h3>
+                </div>
+            </div>
+        </div>
 
-<hr>
+        <div class="col-md-4">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">Delayed Responses</h6>
+                    <h3 class="fw-bold text-danger">{{ delayed_responses }}</h3>
+                </div>
+            </div>
+        </div>
 
-<a href="/">Back to RTI List</a>
+    </div>
+
+    <!-- Chart Card -->
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h5 class="mb-3">Analyst Review Breakdown</h5>
+            <canvas id="reviewChart"></canvas>
+        </div>
+    </div>
+
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Safe JSON data -->
+{{ review_stats|json_script:"review-data" }}
+
+<script>
+    const reviewData = JSON.parse(document.getElementById('review-data').textContent);
+
+    const labels = reviewData.map(item => item.status);
+    const counts = reviewData.map(item => item.count);
+
+    const ctx = document.getElementById('reviewChart');
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Review Status',
+                data: counts,
+            }]
+        },
+    });
+</script>
+
+{% endblock %}

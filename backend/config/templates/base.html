@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Government of Karnataka - RDPR Department</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+    body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        background-color: #eef2f7;
+    }
+
+    .top-strip {
+        height: 6px;
+        background: linear-gradient(to right, #ff9933, white, #138808);
+    }
+
+    header {
+        background-color: #002b5c;
+        color: white;
+        padding: 18px 30px;
+    }
+
+    header h1 {
+        margin: 0;
+        font-size: 22px;
+        letter-spacing: 0.5px;
+    }
+
+    nav {
+        background-color: #014a9e;
+        padding: 12px 30px;
+    }
+
+    nav a {
+        color: white;
+        text-decoration: none;
+        margin-right: 25px;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    nav a:hover {
+        text-decoration: underline;
+    }
+
+    .container {
+        padding: 35px;
+        max-width: 1200px;
+        margin: auto;
+    }
+
+    .page-title {
+        font-size: 22px;
+        font-weight: bold;
+        margin-bottom: 20px;
+        color: #002b5c;
+        border-bottom: 2px solid #002b5c;
+        padding-bottom: 8px;
+    }
+
+    .card {
+        background: white;
+        padding: 25px;
+        margin-bottom: 25px;
+        border-radius: 6px;
+        box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+
+    table th {
+        background-color: #002b5c;
+        color: white;
+        padding: 10px;
+        text-align: left;
+        font-size: 14px;
+    }
+
+    table td {
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+        font-size: 14px;
+    }
+
+    table tr:hover {
+        background-color: #f3f6fa;
+    }
+
+    .btn {
+        background-color: #002b5c;
+        color: white;
+        padding: 8px 14px;
+        text-decoration: none;
+        border-radius: 4px;
+        font-size: 14px;
+        display: inline-block;
+    }
+
+    .btn:hover {
+        background-color: #014a9e;
+    }
+
+    .btn-success {
+        background-color: #138808;
+    }
+
+    .btn-danger {
+        background-color: #c62828;
+    }
+
+    .badge {
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: bold;
+        color: white;
+    }
+
+    .badge-open { background-color: #d97706; }
+    .badge-closed { background-color: #138808; }
+    .badge-delayed { background-color: #c62828; }
+
+    input, select, textarea {
+        width: 100%;
+        padding: 8px;
+        margin-top: 6px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+
+    footer {
+        background-color: #002b5c;
+        color: white;
+        text-align: center;
+        padding: 15px;
+        margin-top: 50px;
+        font-size: 13px;
+    }
+</style>
+
+</head>
+<body>
+
+<div class="top-strip"></div>
+
+<header>
+    <h1>Rural Development & Panchayat Raj Department</h1>
+    <p>Government of Karnataka</p>
+</header>
+
+<nav>
+    <a href="/">RTI Requests</a>
+    <a href="/dashboard/">Dashboard</a>
+    <a href="/admin/">Admin</a>
+
+    {% if user.is_authenticated %}
+        <span style="float:right;">Welcome, {{ user.username }} | 
+        <a href="{% url 'logout' %}" style="color:white;">Logout</a></span>
+    {% else %}
+        <span style="float:right;">
+        <a href="{% url 'login' %}" style="color:white;">Login</a></span>
+    {% endif %}
+</nav>
+
+<div class="container">
+    {% block content %}
+    {% endblock %}
+</div>
+
+<footer>
+    © 2026 Government of Karnataka | RDPR Department | All Rights Reserved
+</footer>
+
+</body>
+</html>

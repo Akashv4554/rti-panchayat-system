@@ -1,32 +1,135 @@
-<h1>RTI Detail</h1>
+{% extends "base.html" %}
+{% block content %}
 
-<h3>Basic Information</h3>
-<p><strong>Reference:</strong> {{ rti.reference_number }}</p>
-<p><strong>Applicant:</strong> {{ rti.applicant_name }}</p>
-<p><strong>Date Filed:</strong> {{ rti.date_filed }}</p>
-<p><strong>Subject:</strong> {{ rti.subject }}</p>
-<p><strong>Panchayat:</strong> {{ rti.panchayat.name }}</p>
+<div class="container mt-5">
 
-<hr>
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-primary">RTI Details</h2>
+            <p class="text-muted small">
+                Department of Rural Development & Panchayat Raj
+            </p>
+        </div>
+        <a href="/" class="btn btn-secondary">← Back to List</a>
+    </div>
 
-<h3>Response</h3>
-{% if response %}
-    <p><strong>Reply:</strong> {{ response.reply_text }}</p>
-    <p><strong>Date Replied:</strong> {{ response.date_replied }}</p>
-    <p><strong>Delayed:</strong> {{ response.is_delayed }}</p>
-{% else %}
-    <p>No response yet.</p>
-{% endif %}
+    <!-- Basic Information -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light fw-semibold">
+            Basic Information
+        </div>
+        <div class="card-body">
 
-<hr>
+            <div class="row mb-2">
+                <div class="col-md-4 fw-semibold">Reference Number:</div>
+                <div class="col-md-8">{{ rti.reference_number }}</div>
+            </div>
 
-<h3>Analyst Review</h3>
-{% if review %}
-    <p><strong>Status:</strong> {{ review.status }}</p>
-    <p><strong>Remarks:</strong> {{ review.remarks }}</p>
-{% else %}
-    <p>No review yet.</p>
-{% endif %}
+            <div class="row mb-2">
+                <div class="col-md-4 fw-semibold">Applicant Name:</div>
+                <div class="col-md-8">{{ rti.applicant_name }}</div>
+            </div>
 
-<a href="/">Back</a>
+            <div class="row mb-2">
+                <div class="col-md-4 fw-semibold">Date Filed:</div>
+                <div class="col-md-8">{{ rti.date_filed }}</div>
+            </div>
 
+            <div class="row mb-2">
+                <div class="col-md-4 fw-semibold">Subject:</div>
+                <div class="col-md-8">{{ rti.subject }}</div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 fw-semibold">Panchayat:</div>
+                <div class="col-md-8">{{ rti.panchayat.name }}</div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Response Section -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light fw-semibold">
+            Response Information
+        </div>
+        <div class="card-body">
+
+            {% if response %}
+
+                <p><strong>Reply:</strong></p>
+                <div class="border rounded p-3 bg-light mb-3">
+                    {{ response.reply_text }}
+                </div>
+
+                <div class="row mb-2">
+                    <div class="col-md-4 fw-semibold">Date Replied:</div>
+                    <div class="col-md-8">{{ response.date_replied }}</div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 fw-semibold">Delayed:</div>
+                    <div class="col-md-8">
+                        {% if response.is_delayed %}
+                            <span class="badge bg-danger">Yes</span>
+                        {% else %}
+                            <span class="badge bg-success">No</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+            {% else %}
+                <div class="alert alert-warning mb-0">
+                    No response submitted yet.
+                </div>
+            {% endif %}
+
+        </div>
+    </div>
+
+    <!-- Analyst Review -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light fw-semibold">
+            Analyst Review
+        </div>
+        <div class="card-body">
+
+            {% if review %}
+
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-semibold">Review Status:</div>
+                    <div class="col-md-8">
+
+                        {% if review.status == "COMPLETE" %}
+                            <span class="badge bg-success">Complete</span>
+                        {% elif review.status == "VAGUE" %}
+                            <span class="badge bg-warning text-dark">Vague</span>
+                        {% elif review.status == "DENIED" %}
+                            <span class="badge bg-dark">Denied</span>
+                        {% elif review.status == "DELAYED" %}
+                            <span class="badge bg-danger">Delayed</span>
+                        {% else %}
+                            <span class="badge bg-secondary">{{ review.status }}</span>
+                        {% endif %}
+
+                    </div>
+                </div>
+
+                <p><strong>Remarks:</strong></p>
+                <div class="border rounded p-3 bg-light">
+                    {{ review.remarks }}
+                </div>
+
+            {% else %}
+                <div class="alert alert-info mb-0">
+                    No analyst review available yet.
+                </div>
+            {% endif %}
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
