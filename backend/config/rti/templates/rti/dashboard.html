@@ -1,0 +1,14 @@
+{% extends 'rti/base.html' %}
+
+{% block content %}
+<h2>RTI Dashboard</h2>
+
+<ul>
+    <li><strong>Total RTI Requests:</strong> {{ total_rti }}</li>
+    <li><strong>Total Responses:</strong> {{ total_responses }}</li>
+    <li><strong>Delayed Responses:</strong> {{ delayed_responses }}</li>
+    <li><strong>Vague Replies:</strong> {{ vague_count }}</li>
+    <li><strong>Denied Replies:</strong> {{ denied_count }}</li>
+</ul>
+
+{% endblock %}
