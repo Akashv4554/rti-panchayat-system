@@ -1,15 +1,17 @@
-{% extends 'rti/base.html' %}
+<h1>RTI Requests</h1>
 
-{% block content %}
-<h2>RTI Requests</h2>
+<a href="/create/">Create New RTI</a>
+<hr>
 
-<ul>
-    {% for rti in rti_requests %}
-        <li>
-            <a href="{% url 'rti_detail' rti.id %}">
-                {{ rti.reference_number }} - {{ rti.subject }}
-            </a>
-        </li>
-    {% endfor %}
-</ul>
-{% endblock %}
+{% for rti in rti_requests %}
+    <div>
+        <h3>{{ rti.reference_number }}</h3>
+        <p><strong>Applicant:</strong> {{ rti.applicant_name }}</p>
+        <p><strong>Date Filed:</strong> {{ rti.date_filed }}</p>
+        <p><strong>Panchayat:</strong> {{ rti.panchayat.name }}</p>
+        <a href="/{{ rti.id }}/">View Details</a>
+        <hr>
+    </div>
+{% empty %}
+    <p>No RTI requests yet.</p>
+{% endfor %}

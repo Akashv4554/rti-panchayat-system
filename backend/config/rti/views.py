@@ -1,9 +1,10 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404,redirect
 from .models import RTIRequest, RTIResponse, AnalystReview
 from django.db.models import Count
+from .forms import RTIForm
 
 def rti_list(request):
-    rti_requests = RTIRequest.objects.all()
+    rti_requests = RTIRequest.objects.all().order_by('-date_filed')
     return render(request, 'rti/rti_list.html', {'rti_requests': rti_requests})
 
 
@@ -27,3 +28,14 @@ def dashboard(request):
     }
 
     return render(request, 'rti/dashboard.html', context)
+
+def create_rti(request):
+    if request.method == 'POST':
+        form = RTIForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('rti_list')
+    else:
+        form = RTIForm()
+
+    return render(request, 'rti/create_rti.html', {'form': form})
