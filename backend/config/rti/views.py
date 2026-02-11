@@ -1,11 +1,24 @@
 from django.shortcuts import render, get_object_or_404,redirect
 from .models import RTIRequest, RTIResponse, AnalystReview
-from django.db.models import Count
+from django.db.models import Count,Q
 from .forms import RTIForm
 
 def rti_list(request):
+    query = request.GET.get('q')
+
     rti_requests = RTIRequest.objects.all().order_by('-date_filed')
-    return render(request, 'rti/rti_list.html', {'rti_requests': rti_requests})
+
+    if query:
+        rti_requests = rti_requests.filter(
+            Q(reference_number__icontains=query) |
+            Q(applicant_name__icontains=query) |
+            Q(subject__icontains=query)
+        )
+
+    return render(request, 'rti/rti_list.html', {
+        'rti_requests': rti_requests,
+        'query': query
+    })
 
 
 def rti_detail(request, pk):
