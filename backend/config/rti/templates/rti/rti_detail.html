@@ -1,28 +1,32 @@
-{% extends 'rti/base.html' %}
+<h1>RTI Detail</h1>
 
-{% block content %}
-<h2>RTI Details</h2>
-
+<h3>Basic Information</h3>
 <p><strong>Reference:</strong> {{ rti.reference_number }}</p>
 <p><strong>Applicant:</strong> {{ rti.applicant_name }}</p>
-<p><strong>Filed Date:</strong> {{ rti.date_filed }}</p>
+<p><strong>Date Filed:</strong> {{ rti.date_filed }}</p>
 <p><strong>Subject:</strong> {{ rti.subject }}</p>
+<p><strong>Panchayat:</strong> {{ rti.panchayat.name }}</p>
 
-{% if rti.rtiresponse %}
-    <h3>Response</h3>
-    <p>{{ rti.rtiresponse.reply_text }}</p>
-    <p><strong>Replied On:</strong> {{ rti.rtiresponse.date_replied }}</p>
+<hr>
 
-    {% if rti.rtiresponse.analystreview %}
-        <h3>Analyst Review</h3>
-        <p><strong>Status:</strong> {{ rti.rtiresponse.analystreview.get_status_display }}</p>
-        <p><strong>Remarks:</strong> {{ rti.rtiresponse.analystreview.remarks }}</p>
-    {% else %}
-        <p><em>No analyst review yet.</em></p>
-    {% endif %}
-
+<h3>Response</h3>
+{% if response %}
+    <p><strong>Reply:</strong> {{ response.reply_text }}</p>
+    <p><strong>Date Replied:</strong> {{ response.date_replied }}</p>
+    <p><strong>Delayed:</strong> {{ response.is_delayed }}</p>
 {% else %}
-    <p><em>No response uploaded yet.</em></p>
+    <p>No response yet.</p>
 {% endif %}
 
-{% endblock %}
+<hr>
+
+<h3>Analyst Review</h3>
+{% if review %}
+    <p><strong>Status:</strong> {{ review.status }}</p>
+    <p><strong>Remarks:</strong> {{ review.remarks }}</p>
+{% else %}
+    <p>No review yet.</p>
+{% endif %}
+
+<a href="/">Back</a>
+

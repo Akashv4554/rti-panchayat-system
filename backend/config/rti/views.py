@@ -9,8 +9,22 @@ def rti_list(request):
 
 
 def rti_detail(request, pk):
-    rti = get_object_or_404(RTIRequest, pk=pk)
-    return render(request, 'rti/rti_detail.html', {'rti': rti})
+    rti = RTIRequest.objects.get(pk=pk)
+
+    response = None
+    review = None
+
+    try:
+        response = rti.rtiresponse
+        review = response.analystreview
+    except:
+        pass
+
+    return render(request, 'rti/rti_detail.html', {
+        'rti': rti,
+        'response': response,
+        'review': review
+    })
 
 def dashboard(request):
     total_rti = RTIRequest.objects.count()
