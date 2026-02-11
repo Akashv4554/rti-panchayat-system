@@ -1,13 +1,19 @@
 from django.shortcuts import render, get_object_or_404,redirect
-from .models import RTIRequest, RTIResponse, AnalystReview
+from .models import RTIRequest, RTIResponse, AnalystReview, PanchayatOffice
 from django.db.models import Count,Q
 from .forms import RTIForm
 
+from django.db.models import Q
+from .models import RTIRequest, PanchayatOffice
+
 def rti_list(request):
-    query = request.GET.get('q')
+    query = request.GET.get('q', '')
+    panchayat_id = request.GET.get('panchayat', '')
+    status = request.GET.get('status', '')
 
     rti_requests = RTIRequest.objects.all().order_by('-date_filed')
 
+    # 🔍 Search filter
     if query:
         rti_requests = rti_requests.filter(
             Q(reference_number__icontains=query) |
@@ -15,9 +21,24 @@ def rti_list(request):
             Q(subject__icontains=query)
         )
 
+    # 🏛 Filter by Panchayat
+    if panchayat_id:
+        rti_requests = rti_requests.filter(panchayat_id=panchayat_id)
+
+    # 📊 Filter by Review Status
+    if status:
+        rti_requests = rti_requests.filter(
+            rtiresponse__analystreview__status=status
+        )
+
+    panchayats = PanchayatOffice.objects.all()
+
     return render(request, 'rti/rti_list.html', {
         'rti_requests': rti_requests,
-        'query': query
+        'query': query,
+        'panchayats': panchayats,
+        'selected_panchayat': panchayat_id,
+        'selected_status': status,
     })
 
 

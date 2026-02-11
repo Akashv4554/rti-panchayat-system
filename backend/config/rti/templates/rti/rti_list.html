@@ -1,8 +1,31 @@
 <h1>RTI Requests</h1>
 
 <form method="get">
+
+    <!-- 🔍 Search -->
     <input type="text" name="q" placeholder="Search..." value="{{ query }}">
-    <button type="submit">Search</button>
+
+    <!-- 🏛 Panchayat Filter -->
+    <select name="panchayat">
+        <option value="">All Panchayats</option>
+        {% for p in panchayats %}
+            <option value="{{ p.id }}"
+                {% if p.id|stringformat:"s" == selected_panchayat %}selected{% endif %}>
+                {{ p.name }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <!-- 📊 Status Filter -->
+    <select name="status">
+        <option value="">All Status</option>
+        <option value="COMPLETE" {% if selected_status == "COMPLETE" %}selected{% endif %}>Complete</option>
+        <option value="VAGUE" {% if selected_status == "VAGUE" %}selected{% endif %}>Vague</option>
+        <option value="DENIED" {% if selected_status == "DENIED" %}selected{% endif %}>Denied</option>
+        <option value="DELAYED" {% if selected_status == "DELAYED" %}selected{% endif %}>Delayed</option>
+    </select>
+
+    <button type="submit">Apply</button>
 </form>
 
 <br>
