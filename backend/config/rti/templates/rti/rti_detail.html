@@ -1,0 +1,18 @@
+{% extends 'rti/base.html' %}
+
+{% block content %}
+<h2>RTI Details</h2>
+
+<p><strong>Reference:</strong> {{ rti.reference_number }}</p>
+<p><strong>Applicant:</strong> {{ rti.applicant_name }}</p>
+<p><strong>Filed Date:</strong> {{ rti.date_filed }}</p>
+<p><strong>Subject:</strong> {{ rti.subject }}</p>
+
+{% if rti.rtiresponse %}
+    <h3>Response</h3>
+    <p>{{ rti.rtiresponse.reply_text }}</p>
+{% else %}
+    <p><em>No response uploaded yet.</em></p>
+{% endif %}
+
+{% endblock %}

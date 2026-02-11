@@ -1,0 +1,15 @@
+{% extends 'rti/base.html' %}
+
+{% block content %}
+<h2>RTI Requests</h2>
+
+<ul>
+    {% for rti in rti_requests %}
+        <li>
+            <a href="{% url 'rti_detail' rti.id %}">
+                {{ rti.reference_number }} - {{ rti.subject }}
+            </a>
+        </li>
+    {% endfor %}
+</ul>
+{% endblock %}
