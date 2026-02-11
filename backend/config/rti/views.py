@@ -30,18 +30,15 @@ def dashboard(request):
     total_rti = RTIRequest.objects.count()
     total_responses = RTIResponse.objects.count()
     delayed_responses = RTIResponse.objects.filter(is_delayed=True).count()
-    vague_count = AnalystReview.objects.filter(status='VAGUE').count()
-    denied_count = AnalystReview.objects.filter(status='DENIED').count()
 
-    context = {
+    review_stats = AnalystReview.objects.values('status').annotate(count=Count('status'))
+
+    return render(request, 'rti/dashboard.html', {
         'total_rti': total_rti,
         'total_responses': total_responses,
         'delayed_responses': delayed_responses,
-        'vague_count': vague_count,
-        'denied_count': denied_count,
-    }
-
-    return render(request, 'rti/dashboard.html', context)
+        'review_stats': review_stats,
+    })
 
 def create_rti(request):
     if request.method == 'POST':

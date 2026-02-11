@@ -1,14 +1,21 @@
-{% extends 'rti/base.html' %}
+<h1>RTI Dashboard</h1>
 
-{% block content %}
-<h2>RTI Dashboard</h2>
+<h3>Statistics</h3>
 
-<ul>
-    <li><strong>Total RTI Requests:</strong> {{ total_rti }}</li>
-    <li><strong>Total Responses:</strong> {{ total_responses }}</li>
-    <li><strong>Delayed Responses:</strong> {{ delayed_responses }}</li>
-    <li><strong>Vague Replies:</strong> {{ vague_count }}</li>
-    <li><strong>Denied Replies:</strong> {{ denied_count }}</li>
-</ul>
+<p><strong>Total RTIs:</strong> {{ total_rti }}</p>
+<p><strong>Total Responses:</strong> {{ total_responses }}</p>
+<p><strong>Delayed Responses:</strong> {{ delayed_responses }}</p>
 
-{% endblock %}
+<hr>
+
+<h3>Analyst Review Breakdown</h3>
+
+{% for stat in review_stats %}
+    <p>{{ stat.status }} : {{ stat.count }}</p>
+{% empty %}
+    <p>No reviews yet.</p>
+{% endfor %}
+
+<hr>
+
+<a href="/">Back to RTI List</a>
