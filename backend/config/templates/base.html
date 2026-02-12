@@ -170,6 +170,13 @@
         <a href="{% url 'login' %}" style="color:white;">Login</a></span>
     {% endif %}
 </nav>
+{% if messages %}
+  {% for message in messages %}
+    <div class="alert alert-success">
+        {{ message }}
+    </div>
+  {% endfor %}
+{% endif %}
 
 <div class="container">
     {% block content %}

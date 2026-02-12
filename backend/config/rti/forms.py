@@ -11,8 +11,24 @@ class RTIForm(forms.ModelForm):
             'reference_number': forms.TextInput(attrs={'class': 'form-control'}),
             'date_filed': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'panchayat': forms.Select(attrs={'class': 'form-select'}),
-            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
+            'subject': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
         }
+    def clean(self):
+        cleaned_data = super().clean()
+        file_fields = [
+            'original_application',
+            'acknowledgement_document',
+            'response_document'
+        ]
+
+        for field in file_fields:
+            file = cleaned_data.get(field)
+            if file:
+                if not file.name.lower().endswith('.pdf'):
+                    self.add_error(field, "Only PDF files are allowed.")
+
+        return cleaned_data
+
 
 class CustomLoginForm(AuthenticationForm):
     username = forms.CharField(

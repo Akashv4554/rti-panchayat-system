@@ -52,6 +52,34 @@
         </div>
     </div>
 
+    <div class="col-md-4">
+    <div class="card shadow-sm border-danger">
+        <div class="card-body text-center">
+            <h6 class="text-muted">Delayed Percentage</h6>
+            <h3 class="text-danger">{{ delayed_percentage }}%</h3>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow mt-4">
+    <div class="card-header bg-success text-white">
+        RTI Requests per Panchayat
+    </div>
+    <div class="card-body">
+        <canvas id="panchayatChart"></canvas>
+    </div>
+</div>
+
+<div class="card shadow mt-4">
+    <div class="card-header bg-primary text-white">
+        Monthly RTI Trend
+    </div>
+    <div class="card-body">
+        <canvas id="monthlyChart"></canvas>
+    </div>
+</div>
+
+
 </div>
 
 <!-- Chart.js -->
@@ -59,6 +87,9 @@
 
 <!-- Safe JSON data -->
 {{ review_stats|json_script:"review-data" }}
+{{ rti_per_panchayat|json_script:"panchayat-data" }}
+{{ monthly_trend|json_script:"monthly-data" }}
+
 
 <script>
     const reviewData = JSON.parse(document.getElementById('review-data').textContent);
@@ -79,5 +110,43 @@
         },
     });
 </script>
+<script>
+    // Panchayat Chart
+    const panchayatData = JSON.parse(document.getElementById('panchayat-data').textContent);
+
+    const pLabels = panchayatData.map(item => item.panchayat__name);
+    const pCounts = panchayatData.map(item => item.count);
+
+    new Chart(document.getElementById('panchayatChart'), {
+        type: 'bar',
+        data: {
+            labels: pLabels,
+            datasets: [{
+                label: 'RTI Count',
+                data: pCounts
+            }]
+        }
+    });
+
+    // Monthly Trend Chart
+    const monthlyData = JSON.parse(document.getElementById('monthly-data').textContent);
+
+    const mLabels = monthlyData.map(item => 
+        new Date(item.month).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })
+    );
+    const mCounts = monthlyData.map(item => item.count);
+
+    new Chart(document.getElementById('monthlyChart'), {
+        type: 'line',
+        data: {
+            labels: mLabels,
+            datasets: [{
+                label: 'Monthly RTI',
+                data: mCounts
+            }]
+        }
+    });
+</script>
+
 
 {% endblock %}

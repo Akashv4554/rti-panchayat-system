@@ -17,6 +17,41 @@ class RTIRequest(models.Model):
     subject = models.TextField()
     panchayat = models.ForeignKey(PanchayatOffice, on_delete=models.CASCADE)
 
+    # 📄 Original RTI Application
+    original_application = models.FileField(
+        upload_to='rti/original/',
+        null=True,
+        blank=True
+    )
+
+    # 📩 Acknowledgement Document
+    acknowledgement_document = models.FileField(
+        upload_to='rti/acknowledgements/',
+        null=True,
+        blank=True
+    )
+
+    acknowledgement_date = models.DateField(null=True, blank=True)
+
+    # 📄 Response Document
+    response_document = models.FileField(
+        upload_to='rti/responses/',
+        null=True,
+        blank=True
+    )
+
+    response_date = models.DateField(null=True, blank=True)
+
+    @property
+    def status(self):
+        if self.response_document:
+            return "Responded"
+        elif self.acknowledgement_document:
+            return "Acknowledged"
+        else:
+            return "Filed"
+
+
     def __str__(self):
         return self.reference_number
 
