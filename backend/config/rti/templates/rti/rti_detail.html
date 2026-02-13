@@ -191,6 +191,15 @@
 
         </div>
     </div>
+    {% if request.user.is_staff %}
+    <div class="text-end mt-3">
+        <a href="{% url 'api_rti' %}" 
+           class="btn btn-warning shadow-sm">
+            View All RTI (Admin API)
+        </a>
+    </div>
+    {% endif %}
+
 </div>
 
 {% endblock %}

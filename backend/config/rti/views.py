@@ -13,9 +13,16 @@ from .forms import CustomLoginForm
 from django.db.models.functions import TruncMonth
 from django.http import HttpResponseForbidden
 from django.contrib import messages
+from rest_framework.permissions import IsAdminUser
+from rest_framework.generics import ListAPIView
 
 def is_analyst(user):
     return user.groups.filter(name='analyst').exists()
+
+class RTIListAPI(ListAPIView):
+    queryset = RTIRequest.objects.all()
+    serializer_class = RTISerializer
+    permission_classes = [IsAdminUser]
 
 class CustomLoginView(LoginView):
     template_name = 'login.html'
@@ -152,3 +159,5 @@ def create_rti(request):
         form = RTIForm()
 
     return render(request, "rti/create_rti.html", {"form": form})
+
+
