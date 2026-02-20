@@ -18,18 +18,11 @@
 
     <!-- Basic Information -->
     <div class="card shadow-lg border-0 mb-4">
-    <div class="card-header bg-primary text-white fw-semibold">
-        Basic Information
-    </div>
-    <div class="card-body">
-        <div class="table-responsive">
+        <div class="card-header bg-primary text-white fw-semibold">
+            Basic Information
+        </div>
+        <div class="card-body">
             <table class="table table-hover align-middle">
-                <thead class="table-light">
-                    <tr>
-                        <th scope="col" style="width: 30%;">Field</th>
-                        <th scope="col">Details</th>
-                    </tr>
-                </thead>
                 <tbody>
                     <tr>
                         <td class="text-muted">Reference Number</td>
@@ -37,7 +30,7 @@
                     </tr>
                     <tr>
                         <td class="text-muted">Applicant Name</td>
-                        <td class="fw-semibold">{{ rti.applicant_name }}</td>
+                        <td>{{ rti.applicant_name }}</td>
                     </tr>
                     <tr>
                         <td class="text-muted">Date Filed</td>
@@ -53,7 +46,9 @@
                     </tr>
                     <tr>
                         <td class="text-muted">Panchayat</td>
-                        <td class="fw-semibold text-primary">{{ rti.panchayat.name }}</td>
+                        <td class="text-primary fw-semibold">
+                            {{ rti.panchayat.name }}
+                        </td>
                     </tr>
                     <tr>
                         <td class="text-muted">Status</td>
@@ -67,20 +62,15 @@
             </table>
         </div>
     </div>
-</div>
-
-
 
     <!-- Response Section -->
     <div class="card shadow-lg border-0 mb-4">
-    <div class="card-header bg-success text-white fw-semibold">
-        Response Information
-    </div>
-
+        <div class="card-header bg-success text-white fw-semibold">
+            Response Information
+        </div>
         <div class="card-body">
 
             {% if response %}
-
                 <p><strong>Reply:</strong></p>
                 <div class="border rounded p-3 bg-light mb-3">
                     {{ response.reply_text }}
@@ -101,9 +91,8 @@
                         {% endif %}
                     </div>
                 </div>
-
             {% else %}
-                <div class="alert alert-warning border-0 shadow-sm mb-0">
+                <div class="alert alert-warning mb-0">
                     ⏳ No response submitted yet.
                 </div>
             {% endif %}
@@ -119,24 +108,19 @@
         <div class="card-body">
 
             {% if review %}
-
-                <div class="row mb-3">
-                    <div class="col-md-4 fw-semibold">Review Status:</div>
-                    <div class="col-md-8">
-
-                        {% if review.status == "COMPLETE" %}
-                            <span class="badge bg-success">Complete</span>
-                        {% elif review.status == "VAGUE" %}
-                            <span class="badge bg-warning text-dark">Vague</span>
-                        {% elif review.status == "DENIED" %}
-                            <span class="badge bg-dark">Denied</span>
-                        {% elif review.status == "DELAYED" %}
-                            <span class="badge bg-danger">Delayed</span>
-                        {% else %}
-                            <span class="badge bg-secondary">{{ review.status }}</span>
-                        {% endif %}
-
-                    </div>
+                <div class="mb-3">
+                    <strong>Status:</strong>
+                    {% if review.status == "COMPLETE" %}
+                        <span class="badge bg-success">Complete</span>
+                    {% elif review.status == "VAGUE" %}
+                        <span class="badge bg-warning text-dark">Vague</span>
+                    {% elif review.status == "DENIED" %}
+                        <span class="badge bg-dark">Denied</span>
+                    {% elif review.status == "DELAYED" %}
+                        <span class="badge bg-danger">Delayed</span>
+                    {% else %}
+                        <span class="badge bg-secondary">{{ review.status }}</span>
+                    {% endif %}
                 </div>
 
                 <p><strong>Remarks:</strong></p>
@@ -152,6 +136,7 @@
 
         </div>
     </div>
+
     <!-- Documents Section -->
     <div class="card shadow-sm mb-4">
         <div class="card-header bg-light fw-semibold">
@@ -161,24 +146,24 @@
 
             {% if rti.original_application %}
                 <a href="{{ rti.original_application.url }}"
-                class="btn btn-outline-primary me-2 mb-2"
-                target="_blank">
+                   class="btn btn-outline-primary me-2 mb-2"
+                   target="_blank">
                     📄 Download Original RTI
                 </a>
             {% endif %}
 
             {% if rti.acknowledgement_document %}
                 <a href="{{ rti.acknowledgement_document.url }}"
-                class="btn btn-outline-warning me-2 mb-2"
-                target="_blank">
+                   class="btn btn-outline-warning me-2 mb-2"
+                   target="_blank">
                     📩 Download Acknowledgement
                 </a>
             {% endif %}
 
             {% if rti.response_document %}
                 <a href="{{ rti.response_document.url }}"
-                class="btn btn-outline-success me-2 mb-2"
-                target="_blank">
+                   class="btn btn-outline-success me-2 mb-2"
+                   target="_blank">
                     📄 Download Response
                 </a>
             {% endif %}
@@ -191,9 +176,75 @@
 
         </div>
     </div>
+
+    <!-- Appeals Section -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-dark text-white fw-semibold">
+            Appeals
+        </div>
+        <div class="card-body">
+
+            {% if first_appeal %}
+
+                <div class="mb-3">
+                    <h6 class="fw-bold">First Appeal</h6>
+                    <p><strong>Reference:</strong> {{ first_appeal.reference_number }}</p>
+                    <p>
+                        <strong>Status:</strong>
+                        <span class="badge 
+                            {% if first_appeal.status == 'PENDING' %} bg-warning text-dark
+                            {% elif first_appeal.status == 'UNDER_REVIEW' %} bg-info
+                            {% elif first_appeal.status == 'DECIDED' %} bg-success
+                            {% else %} bg-secondary
+                            {% endif %}">
+                            {{ first_appeal.get_status_display }}
+                        </span>
+                    </p>
+                </div>
+
+                {% if second_appeal %}
+                    <div>
+                        <h6 class="fw-bold">Second Appeal</h6>
+                        <p><strong>Reference:</strong> {{ second_appeal.reference_number }}</p>
+                        <p>
+                            <strong>Status:</strong>
+                            <span class="badge 
+                                {% if second_appeal.status == 'PENDING' %} bg-warning text-dark
+                                {% elif second_appeal.status == 'UNDER_REVIEW' %} bg-info
+                                {% elif second_appeal.status == 'DECIDED' %} bg-success
+                                {% else %} bg-secondary
+                                {% endif %}">
+                                {{ second_appeal.get_status_display }}
+                            </span>
+                        </p>
+                    </div>
+                {% else %}
+                    <a href="{% url 'file_second_appeal' first_appeal.id %}"
+                       class="btn btn-outline-primary">
+                        File Second Appeal
+                    </a>
+                {% endif %}
+
+            {% else %}
+                {% if can_file_first %}
+                    <a href="{% url 'file_first_appeal' rti.id %}"
+                       class="btn btn-primary">
+                        File First Appeal
+                    </a>
+                {% else %}
+                    <div class="alert alert-secondary mb-0">
+                        First Appeal can be filed 30 days after RTI filing date.
+                    </div>
+                {% endif %}
+            {% endif %}
+
+        </div>
+    </div>
+
+    <!-- Admin API Button -->
     {% if request.user.is_staff %}
     <div class="text-end mt-3">
-        <a href="{% url 'api_rti' %}" 
+        <a href="{% url 'api_rti' %}"
            class="btn btn-warning shadow-sm">
             View All RTI (Admin API)
         </a>

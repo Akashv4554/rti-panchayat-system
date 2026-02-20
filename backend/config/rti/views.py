@@ -1,8 +1,8 @@
 from pyexpat.errors import messages
 from django.shortcuts import render, get_object_or_404,redirect
-from .models import RTIRequest, RTIResponse, AnalystReview, PanchayatOffice
+from .models import RTIRequest, RTIResponse, AnalystReview, PanchayatOffice,Appeal
 from django.db.models import Count,Q
-from .forms import RTIForm
+from .forms import RTIForm, AppealForm, CustomLoginForm
 from django.core.paginator import Paginator
 from .models import RTIRequest, PanchayatOffice
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -15,6 +15,8 @@ from django.http import HttpResponseForbidden
 from django.contrib import messages
 from rest_framework.permissions import IsAdminUser
 from rest_framework.generics import ListAPIView
+from datetime import timedelta
+from django.utils import timezone
 
 def is_analyst(user):
     return user.groups.filter(name='analyst').exists()
@@ -83,22 +85,50 @@ def rti_list(request):
     })
 
 
+from datetime import timedelta
+from django.utils import timezone
+from .models import Appeal
+
 @login_required
 def rti_detail(request, pk):
     rti = get_object_or_404(RTIRequest, pk=pk)
 
-    # Optional: Role-based restriction
-    # Example:
-    # if request.user.role not in ["admin", "analyst"]:
-    #     return HttpResponseForbidden("You are not allowed to view this RTI.")
-
+    # Existing functionality (UNCHANGED)
     response = getattr(rti, "rtiresponse", None)
     review = getattr(response, "analystreview", None) if response else None
+
+    # --- NEW: Appeal Logic ---
+
+    # Get First Appeal
+    first_appeal = Appeal.objects.filter(
+        rti_request=rti,
+        appeal_type='FIRST'
+    ).first()
+
+    # Get Second Appeal
+    second_appeal = None
+    if first_appeal:
+        second_appeal = Appeal.objects.filter(
+            parent_appeal=first_appeal,
+            appeal_type='SECOND'
+        ).first()
+
+    # Check 30-day eligibility for First Appeal
+    can_file_first = False
+    if rti.date_filed:
+        allowed_date = rti.date_filed + timedelta(days=30)
+        if timezone.now().date() >= allowed_date and not first_appeal:
+            can_file_first = True
 
     return render(request, 'rti/rti_detail.html', {
         'rti': rti,
         'response': response,
-        'review': review
+        'review': review,
+
+        # New context variables
+        'first_appeal': first_appeal,
+        'second_appeal': second_appeal,
+        'can_file_first': can_file_first,
     })
 
 @login_required
@@ -161,3 +191,12 @@ def create_rti(request):
     return render(request, "rti/create_rti.html", {"form": form})
 
 
+@login_required
+def file_first_appeal(request, pk):
+    rti = get_object_or_404(RTIRequest, pk=pk)
+    return render(request, "rti/file_first_appeal.html", {"rti": rti})
+
+
+@login_required
+def file_second_appeal(request, pk):
+    return render(request, "rti/file_second_appeal.html")

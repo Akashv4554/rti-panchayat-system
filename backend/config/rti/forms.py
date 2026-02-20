@@ -1,6 +1,6 @@
 from django.contrib.auth.forms import AuthenticationForm
 from django import forms
-from .models import RTIRequest
+from .models import RTIRequest, Appeal
 
 class RTIForm(forms.ModelForm):
     class Meta:
@@ -37,3 +37,15 @@ class CustomLoginForm(AuthenticationForm):
     password = forms.CharField(
         widget=forms.PasswordInput(attrs={'class': 'form-control'})
     )
+
+class AppealForm(forms.ModelForm):
+    class Meta:
+        model = Appeal
+        fields = [
+            'appeal_type',
+            'rti_request',
+            'parent_appeal',
+            'reference_number',
+            'date_filed',
+            'request_pdf',
+        ]
