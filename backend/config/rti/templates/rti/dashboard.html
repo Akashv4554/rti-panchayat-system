@@ -9,13 +9,55 @@
             <h2 class="fw-bold text-primary">RTI Dashboard</h2>
             <p class="text-muted">Department of Rural Development & Panchayat Raj</p>
         </div>
-        <a href="/" class="btn btn-secondary">← Back to RTI List</a>
-    </div>
+        <div>
+    <a href="/" class="btn btn-secondary me-2">← Back to RTI List</a>
 
-    <!-- Statistics Cards -->
-    <div class="row mb-4">
+    <div class="card shadow-sm p-4 mb-4">
+    <h5 class="mb-3">Export Dashboard Report</h5>
+
+    <form method="get" action="{% url 'export_dashboard_pdf' %}" class="row g-3 align-items-end">
 
         <div class="col-md-4">
+            <label class="form-label">Start Date</label>
+            <input type="date"
+                   name="start_date"
+                   class="form-control"
+                   value="{{ request.GET.start_date }}">
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label">End Date</label>
+            <input type="date"
+                   name="end_date"
+                   class="form-control"
+                   value="{{ request.GET.end_date }}">
+        </div>
+
+        <div class="col-md-4">
+            <button type="submit" class="btn btn-primary w-100">
+                📄 Export PDF Report
+            </button>
+        </div>
+
+    </form>
+
+    <small class="text-muted mt-2 d-block">
+        If no date range is selected, current Financial Year will be used.
+    </small>
+</div>
+
+    <a href="{% url 'export_dashboard_pdf' %}" class="btn btn-danger">
+        Export PDF Report
+    </a>
+</div>
+    </div>
+
+    <!-- ============================= -->
+    <!-- STATISTICS CARDS -->
+    <!-- ============================= -->
+    <div class="row mb-4">
+
+        <div class="col-md-3">
             <div class="card shadow-sm text-center">
                 <div class="card-body">
                     <h6 class="text-muted">Total RTIs</h6>
@@ -24,7 +66,7 @@
             </div>
         </div>
 
-        <div class="col-md-4">
+        <div class="col-md-3">
             <div class="card shadow-sm text-center">
                 <div class="card-body">
                     <h6 class="text-muted">Total Responses</h6>
@@ -33,120 +75,197 @@
             </div>
         </div>
 
-        <div class="col-md-4">
+        <div class="col-md-3">
             <div class="card shadow-sm text-center">
                 <div class="card-body">
-                    <h6 class="text-muted">Delayed Responses</h6>
-                    <h3 class="fw-bold text-danger">{{ delayed_responses }}</h3>
+                    <h6 class="text-muted">First Appeals</h6>
+                    <h3 class="fw-bold text-warning">{{ total_first_appeals }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">Second Appeals</h6>
+                    <h3 class="fw-bold text-danger">{{ total_second_appeals }}</h3>
                 </div>
             </div>
         </div>
 
     </div>
 
-    <!-- Chart Card -->
-    <div class="card shadow-sm">
+    <!-- Delayed % -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card shadow-sm border-danger text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">Delayed Percentage</h6>
+                    <h3 class="text-danger">{{ delayed_percentage }}%</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================= -->
+    <!-- ANALYST REVIEW CHART -->
+    <!-- ============================= -->
+    <div class="card shadow-sm mb-4">
         <div class="card-body">
             <h5 class="mb-3">Analyst Review Breakdown</h5>
             <canvas id="reviewChart"></canvas>
         </div>
     </div>
 
-    <div class="col-md-4">
-    <div class="card shadow-sm border-danger">
-        <div class="card-body text-center">
-            <h6 class="text-muted">Delayed Percentage</h6>
-            <h3 class="text-danger">{{ delayed_percentage }}%</h3>
+    <!-- ============================= -->
+    <!-- APPEAL STATUS CHARTS -->
+    <!-- ============================= -->
+    <div class="row">
+
+        <div class="col-md-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-warning text-dark">
+                    First Appeal Status
+                </div>
+                <div class="card-body">
+                    <canvas id="firstAppealChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-danger text-white">
+                    Second Appeal Status
+                </div>
+                <div class="card-body">
+                    <canvas id="secondAppealChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ============================= -->
+    <!-- PANCHAYAT CHART -->
+    <!-- ============================= -->
+    <div class="card shadow mt-4">
+        <div class="card-header bg-success text-white">
+            RTI Requests per Panchayat
+        </div>
+        <div class="card-body">
+            <canvas id="panchayatChart"></canvas>
         </div>
     </div>
-</div>
 
-<div class="card shadow mt-4">
-    <div class="card-header bg-success text-white">
-        RTI Requests per Panchayat
+    <!-- ============================= -->
+    <!-- MONTHLY TREND -->
+    <!-- ============================= -->
+    <div class="card shadow mt-4">
+        <div class="card-header bg-primary text-white">
+            Monthly RTI Trend
+        </div>
+        <div class="card-body">
+            <canvas id="monthlyChart"></canvas>
+        </div>
     </div>
-    <div class="card-body">
-        <canvas id="panchayatChart"></canvas>
-    </div>
-</div>
-
-<div class="card shadow mt-4">
-    <div class="card-header bg-primary text-white">
-        Monthly RTI Trend
-    </div>
-    <div class="card-body">
-        <canvas id="monthlyChart"></canvas>
-    </div>
-</div>
-
 
 </div>
 
-<!-- Chart.js -->
+<!-- ============================= -->
+<!-- CHART.JS -->
+<!-- ============================= -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<!-- Safe JSON data -->
+<!-- Safe JSON -->
 {{ review_stats|json_script:"review-data" }}
 {{ rti_per_panchayat|json_script:"panchayat-data" }}
 {{ monthly_trend|json_script:"monthly-data" }}
-
+{{ first_appeal_status|json_script:"first-appeal-data" }}
+{{ second_appeal_status|json_script:"second-appeal-data" }}
 
 <script>
+    // ===============================
+    // Analyst Review Chart
+    // ===============================
     const reviewData = JSON.parse(document.getElementById('review-data').textContent);
 
-    const labels = reviewData.map(item => item.status);
-    const counts = reviewData.map(item => item.count);
-
-    const ctx = document.getElementById('reviewChart');
-
-    new Chart(ctx, {
+    new Chart(document.getElementById('reviewChart'), {
         type: 'bar',
         data: {
-            labels: labels,
+            labels: reviewData.map(item => item.status),
             datasets: [{
                 label: 'Review Status',
-                data: counts,
+                data: reviewData.map(item => item.count),
             }]
-        },
+        }
     });
-</script>
-<script>
-    // Panchayat Chart
-    const panchayatData = JSON.parse(document.getElementById('panchayat-data').textContent);
 
-    const pLabels = panchayatData.map(item => item.panchayat__name);
-    const pCounts = panchayatData.map(item => item.count);
+    // ===============================
+    // First Appeal Chart
+    // ===============================
+    const firstAppealData = JSON.parse(document.getElementById('first-appeal-data').textContent);
+
+    new Chart(document.getElementById('firstAppealChart'), {
+        type: 'pie',
+        data: {
+            labels: firstAppealData.map(item => item.status),
+            datasets: [{
+                label: 'First Appeal Status',
+                data: firstAppealData.map(item => item.count),
+            }]
+        }
+    });
+
+    // ===============================
+    // Second Appeal Chart
+    // ===============================
+    const secondAppealData = JSON.parse(document.getElementById('second-appeal-data').textContent);
+
+    new Chart(document.getElementById('secondAppealChart'), {
+        type: 'pie',
+        data: {
+            labels: secondAppealData.map(item => item.status),
+            datasets: [{
+                label: 'Second Appeal Status',
+                data: secondAppealData.map(item => item.count),
+            }]
+        }
+    });
+
+    // ===============================
+    // Panchayat Chart
+    // ===============================
+    const panchayatData = JSON.parse(document.getElementById('panchayat-data').textContent);
 
     new Chart(document.getElementById('panchayatChart'), {
         type: 'bar',
         data: {
-            labels: pLabels,
+            labels: panchayatData.map(item => item.panchayat__name),
             datasets: [{
                 label: 'RTI Count',
-                data: pCounts
+                data: panchayatData.map(item => item.count)
             }]
         }
     });
 
+    // ===============================
     // Monthly Trend Chart
+    // ===============================
     const monthlyData = JSON.parse(document.getElementById('monthly-data').textContent);
-
-    const mLabels = monthlyData.map(item => 
-        new Date(item.month).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })
-    );
-    const mCounts = monthlyData.map(item => item.count);
 
     new Chart(document.getElementById('monthlyChart'), {
         type: 'line',
         data: {
-            labels: mLabels,
+            labels: monthlyData.map(item =>
+                new Date(item.month).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })
+            ),
             datasets: [{
                 label: 'Monthly RTI',
-                data: mCounts
+                data: monthlyData.map(item => item.count)
             }]
         }
     });
 </script>
-
 
 {% endblock %}

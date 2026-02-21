@@ -84,21 +84,32 @@ class AnalystReview(models.Model):
     def __str__(self):
         return self.status
 
-from django.db import models
-from django.contrib.auth.models import User
 
-
-class Appeal(models.Model):
-    APPEAL_TYPE_CHOICES = [
-        ('FIRST', 'First Appeal'),
-        ('SECOND', 'Second Appeal'),
-    ]
+class FirstAppeal(models.Model):
 
     STATUS_CHOICES = [
-    ('PENDING', 'Pending'),
-    ('UNDER_REVIEW', 'Under Review'),
-    ('DECIDED', 'Decided'),
+        ('PENDING', 'Pending'),
+        ('UNDER_REVIEW', 'Under Review'),
+        ('DECIDED', 'Decided'),
     ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    rti_request = models.ForeignKey(
+        RTIRequest,
+        on_delete=models.CASCADE,
+        related_name="first_appeals"
+    )
+
+    reference_number = models.CharField(max_length=100)
+    date_filed = models.DateField(default=timezone.now)
+
+    request_pdf = models.FileField(upload_to='appeals/first/request/')
+    response_pdf = models.FileField(
+        upload_to='appeals/first/response/',
+        null=True,
+        blank=True
+    )
 
     status = models.CharField(
         max_length=20,
@@ -106,65 +117,75 @@ class Appeal(models.Model):
         default='PENDING'
     )
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-
-    # Link to RTI (required for First Appeal)
-    rti_request = models.ForeignKey(
-        'RTIRequest',   # replace with your actual RTI model name
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True
-    )
-
-    # Link to First Appeal (required for Second Appeal)
-    parent_appeal = models.ForeignKey(
-        'self',
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True
-    )
-
-    appeal_type = models.CharField(max_length=10, choices=APPEAL_TYPE_CHOICES)
-    reference_number = models.CharField(max_length=100)
-    date_filed = models.DateField()
-
-    request_pdf = models.FileField(upload_to='appeals/requests/')
-    response_pdf = models.FileField(upload_to='appeals/responses/', blank=True, null=True)
-
     created_at = models.DateTimeField(auto_now_add=True)
-
-    
 
     def clean(self):
 
-        # FIRST APPEAL VALIDATION
-        if self.appeal_type == 'FIRST':
+        # ✅ 30-day rule validation
+        if self.rti_request.date_filed:
+            allowed_date = self.rti_request.date_filed + timedelta(days=30)
 
-            if not self.rti_request:
-                raise ValidationError("First Appeal must be linked to an RTI Request.")
+            if timezone.now().date() < allowed_date:
+                raise ValidationError(
+                    "First Appeal can only be filed after 30 days from RTI filing date."
+                )
 
-            # ✅ 30-day condition
-            if self.rti_request.date_filed:
-                allowed_date = self.rti_request.date_filed + timedelta(days=30)
-                if timezone.now().date() < allowed_date:
-                    raise ValidationError("First Appeal can only be filed after 30 days from RTI filing date.")
+        # ✅ Prevent duplicate first appeal
+        if FirstAppeal.objects.filter(
+            rti_request=self.rti_request
+        ).exclude(pk=self.pk).exists():
+            raise ValidationError(
+                "First Appeal already exists for this RTI."
+            )
 
-            # ✅ Prevent duplicate FIRST appeal
-            if Appeal.objects.filter(
-                rti_request=self.rti_request,
-                appeal_type='FIRST'
-            ).exclude(pk=self.pk).exists():
-                raise ValidationError("First Appeal already filed for this RTI.")
+    def __str__(self):
+        return f"First Appeal - {self.reference_number}"
 
-            self.parent_appeal = None
 
-        # SECOND APPEAL VALIDATION
-        if self.appeal_type == 'SECOND':
 
-            if not self.parent_appeal:
-                raise ValidationError("Second Appeal must be linked to a First Appeal.")
+class SecondAppeal(models.Model):
 
-            if self.parent_appeal.appeal_type != 'FIRST':
-                raise ValidationError("Second Appeal must link to a First Appeal only.")
+    STATUS_CHOICES = [
+        ('PENDING', 'Pending'),
+        ('UNDER_REVIEW', 'Under Review'),
+        ('DECIDED', 'Decided'),
+    ]
 
-            self.rti_request = None
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    first_appeal = models.OneToOneField(
+        FirstAppeal,
+        on_delete=models.CASCADE,
+        related_name="second_appeal"
+    )
+
+    reference_number = models.CharField(max_length=100)
+    date_filed = models.DateField(default=timezone.now)
+
+    request_pdf = models.FileField(upload_to='appeals/second/request/')
+    response_pdf = models.FileField(
+        upload_to='appeals/second/response/',
+        null=True,
+        blank=True
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='PENDING'
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def clean(self):
+
+        # Ensure First Appeal exists
+        if not self.first_appeal:
+            raise ValidationError(
+                "Second Appeal must be linked to a First Appeal."
+            )
+
+    def __str__(self):
+        return f"Second Appeal - {self.reference_number}"
+
+

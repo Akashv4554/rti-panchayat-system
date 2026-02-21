@@ -1,1 +1,50 @@
-<h1> 1st appeal</h1>
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h4>File First Appeal</h4>
+        </div>
+
+        <div class="card-body">
+
+            <!-- RTI Details -->
+            <div class="mb-4">
+                <h5>RTI Details</h5>
+                <p><strong>Application ID:</strong> {{ rti.id }}</p>
+                <p><strong>Subject:</strong> {{ rti.subject }}</p>
+                <p><strong>Description:</strong> {{ rti.description }}</p>
+                <p><strong>Date Filed:</strong> {{ rti.created_at }}</p>
+            </div>
+
+            <hr>
+
+            <!-- Appeal Form -->
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label class="form-label">Reason for Appeal</label>
+                    <textarea name="reason" class="form-control" rows="4" required></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Upload Supporting Document (Optional)</label>
+                    <input type="file" name="document" class="form-control">
+                </div>
+
+                <button type="submit" class="btn btn-success">
+                    Submit First Appeal
+                </button>
+
+                <a href="{% url 'rti_detail' rti.id %}" class="btn btn-secondary">
+                    Cancel
+                </a>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

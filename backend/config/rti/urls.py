@@ -7,6 +7,7 @@ urlpatterns = [
     path('', views.rti_list, name='rti_list'),
     path('create/', views.create_rti, name='create_rti'),
      path('dashboard/', views.dashboard, name='dashboard'),
+     path('dashboard/export-pdf/', views.export_dashboard_pdf, name='export_dashboard_pdf'),
     path('<int:pk>/', views.rti_detail, name='rti_detail'),
     path('api/rti/', views.RTIListAPI.as_view(), name='api_rti'),
      path('login/', CustomLoginView.as_view(), name='login'),

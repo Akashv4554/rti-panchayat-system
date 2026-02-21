@@ -1,6 +1,11 @@
-from django.contrib.auth.forms import AuthenticationForm
 from django import forms
-from .models import RTIRequest, Appeal
+from django.contrib.auth.forms import AuthenticationForm
+from .models import RTIRequest, FirstAppeal, SecondAppeal
+
+
+# ======================================
+# RTI REQUEST FORM
+# ======================================
 
 class RTIForm(forms.ModelForm):
     class Meta:
@@ -13,8 +18,10 @@ class RTIForm(forms.ModelForm):
             'panchayat': forms.Select(attrs={'class': 'form-select'}),
             'subject': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
         }
+
     def clean(self):
         cleaned_data = super().clean()
+
         file_fields = [
             'original_application',
             'acknowledgement_document',
@@ -23,12 +30,15 @@ class RTIForm(forms.ModelForm):
 
         for field in file_fields:
             file = cleaned_data.get(field)
-            if file:
-                if not file.name.lower().endswith('.pdf'):
-                    self.add_error(field, "Only PDF files are allowed.")
+            if file and not file.name.lower().endswith('.pdf'):
+                self.add_error(field, "Only PDF files are allowed.")
 
         return cleaned_data
 
+
+# ======================================
+# LOGIN FORM
+# ======================================
 
 class CustomLoginForm(AuthenticationForm):
     username = forms.CharField(
@@ -38,14 +48,68 @@ class CustomLoginForm(AuthenticationForm):
         widget=forms.PasswordInput(attrs={'class': 'form-control'})
     )
 
-class AppealForm(forms.ModelForm):
+
+# ======================================
+# FIRST APPEAL FORM
+# ======================================
+
+class FirstAppealForm(forms.ModelForm):
     class Meta:
-        model = Appeal
+        model = FirstAppeal
         fields = [
-            'appeal_type',
             'rti_request',
-            'parent_appeal',
             'reference_number',
             'date_filed',
             'request_pdf',
         ]
+        widgets = {
+            'rti_request': forms.Select(attrs={'class': 'form-select'}),
+            'reference_number': forms.TextInput(attrs={'class': 'form-control'}),
+            'date_filed': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        request_pdf = cleaned_data.get("request_pdf")
+
+        if request_pdf and not request_pdf.name.lower().endswith('.pdf'):
+            self.add_error("request_pdf", "Only PDF files are allowed.")
+
+        return cleaned_data
+
+
+# ======================================
+# SECOND APPEAL FORM
+# ======================================
+
+class SecondAppealForm(forms.ModelForm):
+    class Meta:
+        model = SecondAppeal
+        fields = [
+            'first_appeal',
+            'reference_number',
+            'date_filed',
+            'request_pdf',
+        ]
+        widgets = {
+            'first_appeal': forms.Select(attrs={'class': 'form-select'}),
+            'reference_number': forms.TextInput(attrs={'class': 'form-control'}),
+            'date_filed': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        request_pdf = cleaned_data.get("request_pdf")
+        first_appeal = cleaned_data.get("first_appeal")
+
+        if request_pdf and not request_pdf.name.lower().endswith('.pdf'):
+            self.add_error("request_pdf", "Only PDF files are allowed.")
+
+        if not first_appeal:
+            self.add_error(
+                "first_appeal",
+                "Second appeal must be linked to a First Appeal."
+            )
+
+        return cleaned_data
